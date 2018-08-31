@@ -28,15 +28,6 @@ def create_app(config_name):
     
 
     return app
-    # from .user import user as user_blueprint
-    # app.register_blueprint(user_blueprint)
-
-    # from . answers import answers as answers_blueprint
-    # app.register_blueprint(answers_blueprint)
-
-    # @app.route('/')
-    # def index():
-    #     return "Challenge 3"
-    # return app
+    
 
 
