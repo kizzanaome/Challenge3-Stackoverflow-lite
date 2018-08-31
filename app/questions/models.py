@@ -15,9 +15,6 @@ class Question():
         self.qstn_title =qstn_title
         self.description =description
         
-        
-
-
     def create_question(self):
         """
             methos creates a question
@@ -54,6 +51,7 @@ class Question():
             cursor =conn.cursor(cursor_factory=naome.RealDictCursor)
             
             sql = ("SELECT * FROM questions WHERE qstn_id = '{}'".format(qstn_id))
+            
             cursor.execute(sql)   
             row = cursor.fetchone()  
             return row
@@ -61,6 +59,16 @@ class Question():
             raise Error
         finally:
             conn.close()
+
+    def check_question(self,qstn_title):
+        conn = database.databaseconnections()
+        cursor = conn.cursor()
+        query = "SELECT * FROM questions WHERE qstn_title=%s"
+        cursor.execute(query, (qstn_title,))
+        qstn_title = cursor.fetchone()
+        if qstn_title:
+            return True
+        return False
     @staticmethod
     def delete_question(qstn_id):
         try:
@@ -79,34 +87,19 @@ class Question():
         finally:
              if conn is not None:
                 conn.close() 
-         
-
-
-
-
-# if __name__ == '__main__':
-#     qstn =Question('1', '2', 'qstn_title', 'description' )
-#     qstn.create_question()
-#     qstn.fetch_all_questions()
-                    
-# class Replytoquestion():
-#     def __init__(self, qstn_id, reply):
-#         self.qstn_id = qstn_id
-#         self.reply = reply
+    @staticmethod   
+    def anwer(qstn_id):
+        try:
+            conn= database.databaseconnections()
+            cursor =conn.cursor(cursor_factory=naome.RealDictCursor)
+            
+            sql = ("SELECT * FROM answers WHERE qstn_id = '{}'".format(qstn_id))
+            
+            cursor.execute(sql)   
+            row = cursor.fetchall()  
+            return row
+        except (Exception, psycopg2.DatabaseError)as Error:
+            raise Error
+        finally:
+            conn.close()
     
-#     def create_answer(self):
-#         answer = {
-#             "qstn_id": self.qstn_id,
-#             "reply": self.reply
-#         }
-
-#         answers.append(answer)
-#         return answer
-
-
-
-
-
-
-
-

@@ -2,14 +2,9 @@
 import unittest
 from app.users.models import User 
 from .test_data import Database
-# from app.question.models import Question, question_db
 import json
 from app import create_app,app_config
-
-
-class UserTests(unittest.TestCase):
-    """Define and setup testing class"""
-    
+from flask_restful import Resource
 
 class Test_Questions(unittest.TestCase):
     def setUp(self):
@@ -17,68 +12,63 @@ class Test_Questions(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client = self.app.test_client
-   
-    def test_add_question(self ):
-        """Test API can add a question (POST request)"""
-        post_qstn1 ={
-                "user_id":"3",
-                'qstn_id':"2",
-                "qstn_title":"What is programing",
-                "description":"Programing is coding"
-                
-
-        }
-        response = self.client().post('api/v1/questions',
-                                    content_type = 'application/json',
-                                    data = json.dumps(post_qstn1)
-
-                                    )
-
-        self.assertEqual(response.status_code,201)
-
-
-    def test_veiw_all_questions(self):   
-        """Test to get or fetch all questions""" 
-        post_qstn1={
-           
-            'qstn_id':"2",
-            'user_id':"3",
-            "qstn_title":"What is programing",
-            "description":"Programing is coding"
-        }
-
-        response = self.client().post('api/v1/questions',
-                                    content_type ='application/json',
-                                    data =json.dumps(post_qstn1))
-        self.assertEqual(response.status_code,201)
-        response = self.client().get('api/v1/questions')
-
-
-    def test_get_single_question(self):
-        '''Test to fetch single question'''
-        post_qstn1={
-            
-            'qstn_id':"2",
-            'user_id':"3",
-            "qstn_title":"What is programing",
-            "description":"Programing is coding"
-        }
         
-        response = self.client().post("/api/v1/questions",
+
+    def register_user(self, username="naome", email="naome@test.com", password="password"):
+        """This helper method helps register a test user."""
+        user_data = {
+            'username':username,
+            'email': email,
+            'password': password
+        }
+        return self.client().post('/api/v1/auth/register', data=user_data)
+
+    def login_user(self, email="naome@test.com", password="password"):
+        """This helper method helps log in a test user."""
+        user_data = {
+            'email': email,
+            'password': password
+        }
+        return self.client().post('/api/v1/auth/login', data=user_data)
+
+    def test_registration_with_empty_user_name(self):
+        """ Test for empty username validation """
+        
+
+        response = self.client().post(
+            "/api/v1/auth/register",
             content_type='application/json',
-            data=json.dumps(post_qstn1))
-        self.assertEquals(response.status_code, 201)
-            
-        response2 = self.client().get("/api/v1/questions/2",
-        content_type='application/json',data=json.dumps(post_qstn1))
-        self.assertEquals(response2.status_code, 200)
+            data=json.dumps(dict(username=" ", email="naome@email.com", password="naome"),)
+        )
+        reply = json.loads(response.data)
+        self.assertEquals(reply.get("message"), "username  feild is required")
+        self.assertEquals(response.status_code, 400)
+    
 
+    def test_user_login_successful(self):
+        """ Test for successful login """
+        response2 = self.client().post("/api/v1/auth/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="naome", email="naome@email.com", password="naome"),)
+                                 )
 
-    def delete_question(self, token, user_id, qtn_id):
-        """
-        Method for deleting a question
-        """
-        response = self.client().delete("/api/v1/questions/2")
-         
-            
+        response = self.client().post(
+            "/api/v1/auth/login",
+            content_type='application/json',
+            data=json.dumps(dict(username="naome", password="naome"))
+        )
+        reply = json.loads(response.data)
+
         self.assertEquals(response.status_code, 200)
+
+    def test_registration_with_wrong_username_format(self):
+        """ Test for empty contact validation """
+
+        response = self.client().post(
+            "/api/auth/register",
+            content_type='application/json',
+            data=json.dumps(dict(username="@@@@@", email="naome@email.com", password="naome"),)
+        )
+        reply = json.loads(response.data)
+        self.assertEquals(reply["message"], "wrong username format entered, Please try again")
+        self.assertEquals(response.status_code, 400)

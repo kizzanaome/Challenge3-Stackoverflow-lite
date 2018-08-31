@@ -5,9 +5,7 @@ import psycopg2
 
 database = database.Database()
 
-"""we first create empty lists"""
-
-                
+"""we first create empty lists"""                
 class Replytoquestion:
     def __init__(self,user_id, qstn_id, ans_body,most_correct):
         self.user_id = user_id
@@ -15,7 +13,6 @@ class Replytoquestion:
         self.ans_body = ans_body
         self.most_correct = most_correct
     
-
     def answer_question(self):
         """
             methos creates a question
@@ -34,8 +31,9 @@ class Replytoquestion:
             raise Error
         finally:
             conn.close()
-
-    def edit_answer(self, ans_id, ans_body):
+            
+    @staticmethod
+    def edit_answer(ans_id, ans_body="ans_body"):
         conn = None                    
         conn = database.databaseconnections()
         cursor =conn.cursor()
@@ -47,6 +45,9 @@ class Replytoquestion:
             return True
         except (Exception, psycopg2.DatabaseError)as Error:
             raise Error
+
+
+
       
 
             
