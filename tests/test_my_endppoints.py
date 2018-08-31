@@ -23,6 +23,8 @@ class Test_Questions(unittest.TestCase):
         }
         return self.client().post('/api/v1/auth/register', data=user_data)
 
+    
+
     def login_user(self, email="naome@test.com", password="password"):
         """This helper method helps log in a test user."""
         user_data = {
@@ -30,6 +32,28 @@ class Test_Questions(unittest.TestCase):
             'password': password
         }
         return self.client().post('/api/v1/auth/login', data=user_data)
+
+    def test_register_valid_details(self):
+        """ Tests creating a new user with valid details """
+        test_user = {
+            'username': 'naome',
+            'email': 'naome@gmail.com',
+            'password': 'naome'
+        }
+        response = self.client().post('/api/v1/auth/register',
+                                    data=json.dumps(test_user),
+                                    content_type='application/json')
+        self.assertIn('You registered successfully. Please login.',
+                      str(response.data))
+        self.assertEqual(response.status_code, 201)
+
+    def test_register_existing_user(self):
+        """ Tests creating a user with existing email """
+        self.register_user()
+        response = self.register_user()
+        self.assertEqual(response.status_code, 409)
+        self.assertIn("User already exists", str(response.data))
+
 
     def test_registration_with_empty_user_name(self):
         """ Test for empty username validation """
