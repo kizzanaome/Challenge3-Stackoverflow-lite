@@ -77,7 +77,7 @@ class Login(Resource):
         username1 = User.fetchsingle(args['username'].strip(), args['password'].strip())
         if  username1:
             user_token = {}
-            access_token = create_access_token(identity= username1[0])
+            access_token = create_access_token(identity= username1[0]).decode('UTF-8')
             
             user_token["token"] = access_token
             return user_token, 200

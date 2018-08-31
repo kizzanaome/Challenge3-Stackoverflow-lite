@@ -1,7 +1,7 @@
 """This module defines tests for the user class and its methods"""
 import unittest
 from app.users.models import User 
-from .test_data import Database
+from app.database import Database
 import json
 from app import create_app,app_config
 from flask_restful import Resource
@@ -11,8 +11,21 @@ class Test_Questions(unittest.TestCase):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
+        
+        database= Database() 
+        database.databaseconnections()
+        database.create_tables()
         self.client = self.app.test_client
         
+
+    def tearDown(self):
+        """
+        Method to droP tables after the test is run
+        """
+        
+        database= Database()
+        database.databaseconnections()
+        database.delete_test_tables()
 
     def register_user(self, username="naome", email="naome@test.com", password="password"):
         """This helper method helps register a test user."""
@@ -21,7 +34,7 @@ class Test_Questions(unittest.TestCase):
             'email': email,
             'password': password
         }
-        return self.client().post('/api/v1/auth/register', data=user_data)
+        return self.client().post('/api/v1/auth/signup', data=user_data)
 
     
 
@@ -40,7 +53,7 @@ class Test_Questions(unittest.TestCase):
             'email': 'naome@gmail.com',
             'password': 'naome'
         }
-        response = self.client().post('/api/v1/auth/register',
+        response = self.client().post('/api/v1/auth/signup',
                                     data=json.dumps(test_user),
                                     content_type='application/json')
         self.assertIn('You registered successfully. Please login.',
@@ -52,7 +65,7 @@ class Test_Questions(unittest.TestCase):
         self.register_user()
         response = self.register_user()
         self.assertEqual(response.status_code, 409)
-        self.assertIn("User already exists", str(response.data))
+        self.assertIn("The user already exists", str(response.data))
 
 
     def test_registration_with_empty_user_name(self):
@@ -60,7 +73,7 @@ class Test_Questions(unittest.TestCase):
         
 
         response = self.client().post(
-            "/api/v1/auth/register",
+            "/api/v1/auth/signup",
             content_type='application/json',
             data=json.dumps(dict(username=" ", email="naome@email.com", password="naome"),)
         )
@@ -71,7 +84,7 @@ class Test_Questions(unittest.TestCase):
 
     def test_user_login_successful(self):
         """ Test for successful login """
-        response2 = self.client().post("/api/v1/auth/register",
+        response2 = self.client().post("/api/v1/auth/signup",
                                  content_type='application/json',
                                  data=json.dumps(dict(username="naome", email="naome@email.com", password="naome"),)
                                  )
@@ -89,7 +102,7 @@ class Test_Questions(unittest.TestCase):
         """ Test for empty contact validation """
 
         response = self.client().post(
-            "/api/auth/register",
+            "/api/auth/signup",
             content_type='application/json',
             data=json.dumps(dict(username="@@@@@", email="naome@email.com", password="naome"),)
         )

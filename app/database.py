@@ -88,6 +88,31 @@ class Database:
             connection = self.databaseconnections()
             connection.close()
 
+    def delete_test_tables(self):
+        connection = self.databaseconnections()
+        cursor = connection.cursor()
+
+
+        delete_queries = (
+            """
+            DROP TABLE IF EXISTS users CASCADE
+            """,
+
+            """
+			DROP TABLE IF EXISTS questions CASCADE
+						""",
+
+            """
+            DROP TABLE IF EXISTS answers CASCADE
+            """,
+            """
+            DROP TABLE IF EXISTS comments CASCADE
+            """
+        )
+        for query in delete_queries:
+            cursor.execute(query)  
+
+         
 # if __name__ == '__main__':
 #     db = Database()
 #     db.create_tables()
