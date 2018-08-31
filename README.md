@@ -1,8 +1,7 @@
 # Stackoverflow-lite-challenge-3
 Integrating Api with database
-
 [![Build Status](https://travis-ci.org/kizzanaome/Challenge3-Stackoverflow-lite.svg?branch=develop)](https://travis-ci.org/kizzanaome/Challenge3-Stackoverflow-lite)
-[![Coverage Status](https://coveralls.io/repos/github/kizzanaome/Challenge3-Stackoverflow-lite/badge.svg?branch=develop)](https://coveralls.io/github/kizzanaome/Challenge3-Stackoverflow-lite?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/kizzanaome/Level-up/badge.svg?branch=develop)](https://coveralls.io/github/kizzanaome/Level-up?branch=develop)
 # -Stack-Overflow-lite
 
 StackOverflow-lite is a platform where people can ask questions and provide answers.
